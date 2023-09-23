@@ -105,6 +105,7 @@ set(_state_variable_names
     GIT_COMMIT_BODY
     GIT_DESCRIBE
     GIT_BRANCH
+    GIT_TAGS
     # >>>
     # 1. Add the name of the additional git variable you're interested in monitoring
     #    to this list.
@@ -241,6 +242,16 @@ function(GetGitState _working_dir)
     else()
         set(ENV{GIT_BRANCH} "${output}")
     endif()
+
+    set(_permit_git_failure ON)
+    RunGitCommand(describe --tags --dirty)
+    unset(_permit_git_failure)
+    if(exit_code EQUAL 0)
+      set(ENV{GIT_TAGS} "${output}")
+    else()
+      set(ENV{GIT_TAGS} "") # empty string.
+    endif()
+
 
     # >>>
     # 2. Additional git properties can be added here via the
